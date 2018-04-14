@@ -2,9 +2,8 @@
 {
     public enum Emotion : int
     {
-        First = 0,
-
-        Anger = First,
+        Anger = 0,
+        First = Anger,
         Contempt,
         Disgust,
         Fear,
@@ -12,8 +11,8 @@
         Neutral,
         Sadness,
         Surprise,
-
         Last = Surprise,
+
         Count
     }
 }

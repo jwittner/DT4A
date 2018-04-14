@@ -12,11 +12,11 @@ namespace Sentiment
 
         public Texture LiveTexture {  get { return webCam; } }
 
-        public byte[] EncodeCurrentFrameAsPNG()
+        public Texture2D CurrentFrame()
         {
             var texture = new Texture2D(webCam.width, webCam.height, TextureFormat.ARGB32, false);
             texture.SetPixels32(webCam.GetPixels32());
-            return texture.EncodeToPNG();
+            return texture;
         }
 
         private void Awake()

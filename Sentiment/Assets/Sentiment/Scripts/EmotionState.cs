@@ -1,18 +1,22 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
 namespace Sentiment
 {
-    public struct SentimentState
+    public struct EmotionState
     {
+        private byte[] source;
         private float[] confidence;
 
-        public SentimentState(float[] confidence)
+        public EmotionState(byte[] source, float[] confidence)
         {
+            if( source == null ) { throw new ArgumentNullException(nameof(source)); }
+            this.source = (byte[])source.Clone();
+
             this.confidence = null;
+
             if (confidence == null) { return; }
             if (confidence.Length != (int)Emotion.Count)
             {
@@ -28,7 +32,7 @@ namespace Sentiment
 
         public float this[Emotion emotion]
         {
-            get { return this.confidence[(int)emotion]; }
+            get { return this.confidence != null ? this.confidence[(int)emotion] : 0; }
         }
 
         public override string ToString()

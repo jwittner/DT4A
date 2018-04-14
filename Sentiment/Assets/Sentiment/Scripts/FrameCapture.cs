@@ -38,15 +38,13 @@ namespace Sentiment
         void SaveFrame()
         {
             var videoFeed = GetComponentInParent<VideoFeed>();
-            byte[] pngBytes = videoFeed.EncodeCurrentFrameAsPNG();
-
-            StartCoroutine(RequestSentiment(pngBytes));
+            StartCoroutine(RequestSentiment(videoFeed.CurrentFrame()));
         }
 
-        IEnumerator RequestSentiment(byte [] imageBytes)
+        IEnumerator RequestSentiment(Texture2D source)
         {
             var sr = new SentimentRequest();
-            yield return sr.Send(imageBytes);
+            yield return sr.Send(source.EncodeToPNG());
 
             TextMesh.text = sr.Result.ToString();
         }

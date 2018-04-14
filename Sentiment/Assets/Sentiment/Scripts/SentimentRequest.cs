@@ -8,7 +8,7 @@ namespace Sentiment
 {
     public class SentimentRequest
     {
-        public SentimentState Result;
+        public EmotionState Result;
         const string uriBase = "https://westus.api.cognitive.microsoft.com/face/v1.0/detect";
 
         [Serializable]
@@ -23,7 +23,7 @@ namespace Sentiment
             public float sadness;
             public float surprise;
 
-            public SentimentState ConvertToEmotionalState()
+            public float[] ConvertToEmotionStateConfidence()
             {
                 float[] confidence = new float[(int)Emotion.Count];
                 confidence[(int)Emotion.Anger] = this.anger;
@@ -34,7 +34,7 @@ namespace Sentiment
                 confidence[(int)Emotion.Neutral] = this.neutral;
                 confidence[(int)Emotion.Sadness] = this.sadness;
                 confidence[(int)Emotion.Surprise] = this.surprise;
-                return new SentimentState(confidence);
+                return confidence;
             }
         }
         [Serializable]
@@ -86,18 +86,23 @@ namespace Sentiment
             {
                 Debug.Log("Upload complete!");
                 Debug.Log(www.downloadHandler.text);
-                Result = ParseJson(www.downloadHandler.text);
+                EmotionDTO emotion = ParseJson(www.downloadHandler.text);
+                if( emotion != null)
+                {
+                    Result = new EmotionState(imageBytes, emotion.ConvertToEmotionStateConfidence());
+                }
+                else { Result = new EmotionState(imageBytes, null); }
             }
         }
-        private SentimentState ParseJson(string json)
+        private EmotionDTO ParseJson(string json)
         {
             json = string.Format("{{ \"{0}\" : {1}}}", "faceInfos", json);
             var faces = JsonUtility.FromJson<FaceInfoSetDTO>(json);
             if (faces.faceInfos != null && faces.faceInfos.Length > 0)
             {
-                return faces.faceInfos[0].faceAttributes.emotion.ConvertToEmotionalState();
+                return faces.faceInfos[0].faceAttributes.emotion;
             }
-            else return default(SentimentState);
+            else return default(EmotionDTO);
         }
     }
 
